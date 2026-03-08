@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 interface AddToCartButtonProps {
-  teamLogoUrl: string;
+  teamLogoUrl: string | null;  
   shirtName: string;
   variantId: string;
   quantity?: number;
