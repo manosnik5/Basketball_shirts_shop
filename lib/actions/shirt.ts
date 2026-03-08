@@ -1,4 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { CreateShirtInput } from "../types";
+import { FilterParams } from "../types";
+import { SIZES, TEAM_SLUGS, BRAND_SLUGS, LEAGUE_SLUGS, POSITION_SLUG, IMAGE_VARIANTS } from "../constants";
+import { toSlug } from "../utils";
+import { Shirt } from "../types";
+import { headers } from "next/headers";
+import {auth} from "@/lib/auth";
 
 export async function getAllShirts(filters: FilterParams) {
   const {
@@ -17,11 +24,12 @@ export async function getAllShirts(filters: FilterParams) {
 
   const where: any = { isPublished: true };
 
-  if (search) {
+  if (search && search.trim()) {
     where.OR = [
-      { name: { contains: search, mode: "insensitive" } },
-      { team: { name: { contains: search, mode: "insensitive" } } },
-      { brand: { name: { contains: search, mode: "insensitive" } } },
+      { name: { contains: search, mode: 'insensitive' } },
+      { team: { name: { contains: search, mode: 'insensitive' } } },
+      { brand: { name: { contains: search, mode: 'insensitive' } } },
+      { league: { name: { contains: search, mode: 'insensitive' } } },
     ];
   }
 
@@ -61,7 +69,98 @@ export async function getAllShirts(filters: FilterParams) {
     where.OR = [...(where.OR ?? []), ...orPriceConditions];
   }
 
+
+  let orderBy: any = { createdAt: 'desc' }; 
+
+  if (sort === 'oldest') {
+    orderBy = { createdAt: 'asc' };
+  } 
+
   const totalCount = await prisma.shirt.count({ where });
+
+  if (sort === "price_asc" || sort === "price_desc" || sort === "featured") {
+    const allShirts = await prisma.shirt.findMany({
+      where,
+      include: {
+        brand: true,
+        league: true,
+        team: true,
+        variants: {
+          include: {
+            size: true,
+            images: true,
+            orderItems: {
+              include: {
+                order: {
+                  select: {
+                    status: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        images: true,
+      },
+    });
+
+    const formattedShirts = allShirts.map((shirt) => {
+      const prices = shirt.variants.map((v) => Number(v.salePrice ?? v.price));
+      const minPrice = prices.length ? Math.min(...prices) : 0;
+      const maxPrice = prices.length ? Math.max(...prices) : 0;
+
+      const mainImage =
+        shirt.images.find((img) => img.isPrimary)?.url ??
+        shirt.images[0]?.url ??
+        null;
+
+      const totalSales = shirt.variants.reduce((sum, variant) => {
+        const soldQuantity = variant.orderItems
+          .filter((orderItem) => 
+            orderItem.order.status === 'PAID' || 
+            orderItem.order.status === 'SHIPPED' || 
+            orderItem.order.status === 'DELIVERED'
+          )
+          .reduce((itemSum, orderItem) => itemSum + orderItem.quantity, 0);
+        return sum + soldQuantity;
+      }, 0);
+
+      return {
+        id: shirt.id,
+        name: shirt.name,
+        description: shirt.description,
+        minPrice,
+        maxPrice,
+        mainImage,
+        createdAt: shirt.createdAt,
+        totalSales,
+      };
+    });
+
+
+    if (sort === "price_asc") {
+      formattedShirts.sort((a, b) => a.minPrice - b.minPrice);
+    } else if (sort === "price_desc") {
+      formattedShirts.sort((a, b) => b.minPrice - a.minPrice);
+    } else if (sort === "featured") {
+      formattedShirts.sort((a, b) => {
+        if (b.totalSales !== a.totalSales) {
+          return b.totalSales - a.totalSales;
+        }
+        return b.createdAt.getTime() - a.createdAt.getTime();
+      });
+    }
+
+    const paginatedShirts = formattedShirts.slice(
+      (page - 1) * limit,
+      page * limit
+    );
+
+    return {
+      shirts: paginatedShirts,
+      totalCount,
+    };
+  }
 
   const shirts = await prisma.shirt.findMany({
     where,
@@ -77,6 +176,7 @@ export async function getAllShirts(filters: FilterParams) {
       },
       images: true,
     },
+    orderBy,
     skip: (page - 1) * limit,
     take: limit,
   });
@@ -98,24 +198,15 @@ export async function getAllShirts(filters: FilterParams) {
       minPrice,
       maxPrice,
       mainImage,
+      createdAt: shirt.createdAt,
     };
   });
 
-  // Client-side sorting (OK)
-  if (sort === "price_asc") {
-    formattedShirts.sort((a, b) => a.minPrice - b.minPrice);
-  } else if (sort === "price_desc") {
-    formattedShirts.sort((a, b) => b.minPrice - a.minPrice);
-  } else if (sort === "newest") {
-    formattedShirts.sort((a, b) => Number(b.id) - Number(a.id));
-  }
-
   return {
     shirts: formattedShirts,
-    totalCount, // ✅ REAL TOTAL
+    totalCount,
   };
 }
-
 
 export const getFeaturedShirts = async (shirtId: string) => {
   const currentShirt = await prisma.shirt.findUnique({
@@ -179,6 +270,8 @@ export const getFeaturedShirts = async (shirtId: string) => {
         isPrimary: img.isPrimary,
         sortOrder: img.sortOrder,
       }));
+
+      
 
 
     return {
@@ -252,6 +345,169 @@ export const getShirt = async (id: string) => {
   };
 };
 
+export async function createShirt(data: CreateShirtInput) {
+  const {
+    playerName,
+    positionName,
+    jerseyNumber,
+    name,
+    description,
+    brandName,
+    leagueName,
+    teamName,
+    basePrice,
+    sku,
+    imageUrls,
+  } = data;
+
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) throw new Error("Unauthorized");
+  if (session.user.role !== "ADMIN") throw new Error("Forbidden");
 
 
 
+  const brandSlug = BRAND_SLUGS[brandName];
+  const leagueSlug = LEAGUE_SLUGS[leagueName];
+  const teamSlug = TEAM_SLUGS[teamName];
+  const positionSlug = POSITION_SLUG[positionName];
+  const playerSlug = toSlug(playerName);
+  
+  
+
+  if (!brandSlug) throw new Error(`Brand "${brandName}" not found`);
+  if (!leagueSlug) throw new Error(`League "${leagueName}" not found`);
+  if (!teamSlug) throw new Error(`Team "${teamName}" not found`);
+  if (!positionSlug) throw new Error(`Position "${positionName}" not found`);
+
+  const brand = await prisma.brand.findUnique({ where: { slug: brandSlug } });
+  const league = await prisma.league.findUnique({ where: { slug: leagueSlug } });
+  const team = await prisma.team.findUnique({ where: { slug: teamSlug } });
+  const position = await prisma.position.findUnique({ where: { slug: positionSlug } });
+
+  if (!brand) throw new Error(`Brand "${brandName}" not found`);
+  if (!league) throw new Error(`League "${leagueName}" not found`);
+  if (!team) throw new Error(`Team "${teamName}" not found`);
+  if (!position) throw new Error(`Team "${positionName}" not found`);
+  return prisma.$transaction(async (tx) => {
+ 
+
+  let player = await tx.player.findUnique({ where: { slug: playerSlug } });
+  if (!player) {
+    player = await tx.player.create({
+      data: {
+        name: playerName,
+        slug: playerSlug,
+        teamId: team.id,
+        positionId: position.id,
+        number: jerseyNumber,
+      },
+    });
+  }
+
+    const shirt: Shirt = await tx.shirt.create({
+      data: {
+        name,
+        description,
+        brandId: brand.id,
+        leagueId: league.id,
+        teamId: team.id,
+        playerId: player.id,
+        isPublished: true,
+      },
+    });
+
+    const sizes = await tx.size.findMany({
+      where: { slug: { in: SIZES.map((s) => s.toLowerCase()) } },
+    });
+
+    const variants = await Promise.all(
+      sizes.map((size) =>
+        tx.shirtVariant.create({
+          data: {
+            shirtId: shirt.id,
+            sku: `${sku}-${size.slug}`,
+            price: basePrice,
+            sizeId: size.id,
+          },
+        })
+      )
+    );
+
+
+if (imageUrls.length) {
+  await Promise.all(
+    imageUrls.map(async (url, index) => {
+      const variantName = IMAGE_VARIANTS[index] || `extra-${index + 1}`; 
+
+      const path = `players/${leagueSlug}/${teamSlug}/${playerSlug}-${variantName}.avif`;
+
+      await tx.shirtImage.create({
+        data: {
+          shirtId: shirt.id,
+          url: path, 
+          isPrimary: index === 0, 
+          sortOrder: index + 1,  
+        },
+      });
+    })
+  );
+}
+
+    return { shirt, variants, player };
+  });
+}
+
+export async function deleteShirt(shirtId: string){
+  const headersList = await headers();
+
+  const session = await auth.api.getSession({
+      headers: headersList,
+  });
+
+  if (!session) throw new Error("Unauthorized");
+  if (session.user.role !== "ADMIN") throw new Error("Forbidden");
+
+  return prisma.$transaction(async (tx) => {
+    const shirt = await tx.shirt.findUnique({
+      where: {
+        id: shirtId
+      },
+      include: {
+        images: true,
+        player: {
+          include: {
+            shirts: true
+          },
+        },
+      },
+    });
+    if (!shirt) throw new Error("Shirt not found");
+
+    await tx.shirtVariant.deleteMany({
+      where: { shirtId },
+    });
+
+    await tx.shirtImage.deleteMany({
+      where: { shirtId },
+    });
+
+
+    await tx.shirt.delete({
+      where: { id: shirtId },
+    });
+
+   
+    if (shirt.player && shirt.player.shirts.length === 1) {
+      await tx.player.delete({
+        where: { id: shirt.player.id },
+      });
+    }
+
+    return { success: true };
+  }
+)
+
+}
