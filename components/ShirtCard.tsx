@@ -1,14 +1,20 @@
+"use client"
+
 import Image from "next/image";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Shirt } from "@/lib/type";
+import { Shirt } from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { useDeleteShirt } from "@/lib/hooks/useDeleteShirt";
 
 interface ShirtCardProps {
   shirt: Shirt;
+  isAdmin: boolean
 }
 
-export default function ShirtCard({ shirt }: ShirtCardProps) {
- 
+export default function ShirtCard({ shirt, isAdmin }: ShirtCardProps) {
+  const {mutate, isPending} = useDeleteShirt();
+  const router = useRouter();
   return (
     <Card className="w-full h-[520px] flex flex-col justify-between overflow-hidden shadow-lg bg-light-light rounded-lg">
       <CardContent className="flex flex-col justify-between h-full p-4">
@@ -23,6 +29,25 @@ export default function ShirtCard({ shirt }: ShirtCardProps) {
               fill
               className="object-contain group-hover:scale-105 transition-transform duration-300 ease-in-out"
             />
+            {isAdmin && (
+              <button  
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (confirm("Are you sure you want to delete this jersey?")) {
+                  mutate(shirt.id, {
+                    onSuccess: () => {
+                        router.refresh(); // ✅ reloads the page data
+                      },
+                  });
+                  
+                }
+              }} 
+              disabled={isPending}
+              className="absolute top-2 right-2 bg-red-500 text-white px-3 py-2 rounded-xl opacity-100 hover:bg-red-400 transition cursor-pointer">✕</button>
+            )}
+             
+            
           </div>
 
           <h3 className="text-lg font-medium text-dark-900 transition-colors truncate">
