@@ -8,7 +8,6 @@ interface PageProps {
 
 const page = async ({searchParams}: PageProps) => {
     const error = (await searchParams).error;
-  console.log(error)
     if (!error) redirect("/")
   return (
 

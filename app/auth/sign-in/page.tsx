@@ -1,5 +1,7 @@
-import AuthForm from "@/components/AuthForm"
-const page = () => {
+import AuthForm from "@/components/AuthForm";
+
+const page = async () => {
+
   return <AuthForm mode="sign-in"/>
 }
 
