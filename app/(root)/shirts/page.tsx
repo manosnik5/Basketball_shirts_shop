@@ -22,20 +22,17 @@ const page = async ({searchParams}: {
 
     const isAdmin = session?.user?.role === 'ADMIN';
 
-    
     const sp = await searchParams;
     const parsed = parseFilterParams(sp);
     const currentPage = Number(sp.page ?? 1);
     const pageSize = Number(sp.pageSize ?? 6);
 
-    const offset = (currentPage - 1) * pageSize;
-
     const { shirts, totalCount } = await getAllShirts({
-    ...parsed,
-    search: typeof sp.search === 'string' ? sp.search : undefined,
-    limit: pageSize,
-    offset,
-  });
+      ...parsed,
+      search: typeof sp.search === 'string' ? sp.search : undefined,
+      limit: pageSize,
+      page: currentPage,  
+    });
 
     const activeBadges: string[] = [];
 
