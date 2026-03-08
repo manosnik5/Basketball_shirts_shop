@@ -13,6 +13,21 @@ export const PAYMENT_METHODS = [
   },
 ];
 
+export const NAV_LINKS = [
+  {
+    label: "Home", href: "/",
+  },
+  {
+    label: "Jerseys", href: "/shirts",
+  },
+  {
+    label: "Teams", href: "/#teams",
+  },
+  {
+    label: "Contact", href: "/#contact",
+  },
+] as const;
+
 export const footerColumns = [
   {
     title: "Customer service",
@@ -36,8 +51,8 @@ export const socialLinks = [
 ]
 
 export const OPTIONS = [
-  { label: "Featured", value: "featured" },
   { label: "Newest", value: "newest" },
+  { label: "Featured", value: "featured" },
   { label: "Price (High → Low)", value: "price_desc" },
   { label: "Price (Low → High)", value: "price_asc" },
 ]
