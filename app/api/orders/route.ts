@@ -13,8 +13,7 @@ export const POST = withAuth(async (request, session) => {
         { status: 400 }
       );
     }
-
-
+    
     const result = await placeOrder(
       session.user.id,
       shippingAddressId,
