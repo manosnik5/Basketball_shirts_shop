@@ -11,7 +11,7 @@ export async function HandleAuthAction(formData: FormData, mode: "sign-in" | "si
       const name = String(formData.get("fullname"));
       const result = await signUp.email({ name, email, password });
       if (result.error) throw new Error(result.error.message);
-      return { success: true, redirect: "/sign-in" };
+      return { success: true, redirect: "/auth/sign-in" };
     }
 
     
@@ -42,17 +42,7 @@ export const googleAuth = async () => {
     await signIn.social({
         provider: "google",
         callbackURL: "/",
-        errorCallbackURL: "/sign-in",
-        fetchOptions: {
-           
-        }
-    })
-}
-export const facebookAuth = async () => {
-    await signIn.social({
-        provider: "facebook",
-        callbackURL: "/",
-        errorCallbackURL: "/sign-in",
+        errorCallbackURL: "/auth/sign-in",
         fetchOptions: {
            
         }
