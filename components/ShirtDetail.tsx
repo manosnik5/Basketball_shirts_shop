@@ -3,20 +3,24 @@
 import { useState } from "react";
 import SizePicker from "@/components/SizePicker";
 import CollapsibleSection from "@/components/CollapsibleSection";
-import AddToCartButton from "@/components/AddToCartButton";
+import AddToCartButton from "@/components/AddToCartButton";import { getShirt } from "@/lib/actions/shirt";
 
 function formatPrice(price: number | null | undefined) {
   if (price === null || price === undefined) return undefined;
   return `$${price.toFixed(2)}`;
 }
  
-const ShirtDetail = ({ shirt, defaultVariant }) => {
+type ShirtWithDetails = NonNullable<Awaited<ReturnType<typeof getShirt>>>;
+
+interface ShirtDetailProps {
+  shirt: ShirtWithDetails;
+  defaultVariant: ShirtWithDetails["variants"][0];
+}
+
+const ShirtDetail = ({ shirt, defaultVariant }: ShirtDetailProps) => {
   const [selectedVariantId, setSelectedVariantId] = useState(defaultVariant.id);
   const [quantity, setQuantity] = useState(1);
-  console.log('selectedVariantId', selectedVariantId);
 
-
-    
     const basePrice = defaultVariant ? Number(defaultVariant.price) : null;
     const salePrice = defaultVariant?.salePrice ? Number(defaultVariant.salePrice) : null;
   
@@ -81,9 +85,10 @@ const ShirtDetail = ({ shirt, defaultVariant }) => {
             />
         </div> 
         <AddToCartButton
-            shirtName={shirt.name}
-            variantId={selectedVariantId}
-            quantity={quantity}
+          teamLogoUrl={shirt.team?.logoUrl ?? null}
+          shirtName={shirt.name}
+          variantId={selectedVariantId}
+          quantity={quantity}
         />
     </div>
 
