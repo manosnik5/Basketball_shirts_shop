@@ -6,7 +6,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <>
       <Navbar />
         {children}
-      <Footer />
+      <Footer/>
     </>
   );
 }
