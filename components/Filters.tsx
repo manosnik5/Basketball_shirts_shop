@@ -4,17 +4,9 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { getArrayParam, removeParams, toggleArrayParam } from "@/lib/utils/query";
 import FilterGroup from "./FilterGroup";
+import { BRANDS, PRICES, LEAGUES } from "@/lib/constants";
 
-const BRANDS = ["nike", "adidas", "puma"] as const;
-const LEAGUES = ["nba", "euroleague"] as const;
-const TEAMS = ["lakers", "warriors", "barcelona"] as const;
-const SIZES = ["S", "M", "L", "XL"] as const;
-const PRICES = [
-  { id: "0-50", label: "$0 - $50" },
-  { id: "50-100", label: "$50 - $100" },
-  { id: "100-150", label: "$100 - $150" },
-  { id: "150-", label: "Over $150" },
-] as const;
+
 
 type GroupKey = "brand" | "league" | "team" | "size" | "price";
 
@@ -27,16 +19,15 @@ const Filters = () => {
     const [open, setOpen] = useState(false);
     const [expanded, setExpanded] = useState<Record<GroupKey, boolean>>({
         brand: true,
-        team: true,
         league: true,
-        size: true,
         price: true,
+        team: true, 
+        size: true,
     });
 
     const activeCounts = {
       brand: getArrayParam(search, "brand").length,
       league: getArrayParam(search, "league").length,
-      team: getArrayParam(search, "team").length,
       size: getArrayParam(search, "size").length,
       price: getArrayParam(search, "price").length,
     };
@@ -102,31 +93,6 @@ const Filters = () => {
             })}
           </ul>
         </FilterGroup>
-         <FilterGroup 
-            title={`Size ${activeCounts.size ? `(${activeCounts.size})` : ""}`}
-            k="size"
-            expanded={expanded.size}
-            setExpanded={setExpanded}
-        >
-          <ul className="grid grid-cols-5 gap-2">
-            {SIZES.map((s) => {
-              const checked = getArrayParam(search, "size").includes(s);
-              return (
-                <li key={s}>
-                  <label className="inline-flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 accent-dark-900 cursor-pointer"
-                      checked={checked}
-                      onChange={() => onToggle("size", s)}
-                    />
-                    <span className="text-body">{s}</span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </FilterGroup>
 
         <FilterGroup 
             title={`League ${activeCounts.league ? `(${activeCounts.league})` : ""}`}
@@ -153,31 +119,7 @@ const Filters = () => {
             })}
           </ul>
         </FilterGroup>
-        <FilterGroup 
-            title={`Team ${activeCounts.team ? `(${activeCounts.league})` : ""}`}
-            k="team"
-            expanded={expanded.team}
-            setExpanded={setExpanded}>
-          <ul className="grid grid-cols-2 gap-2">
-            {TEAMS.map((t) => {
-              const checked = getArrayParam(search, "team").includes(t);
-              return (
-                <li key={t} className="flex items-center gap-2">
-                  <input
-                    id={`team-${t}`}
-                    type="checkbox"
-                    className="h-4 w-4 accent-dark-900 cursor-pointer"
-                    checked={checked}
-                    onChange={() => onToggle("team", t)}
-                  />
-                  <label htmlFor={`team-${t}`} className="text-body capitalize">
-                    {t}
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </FilterGroup>
+       
 
         <FilterGroup 
           title={`Price ${activeCounts.price ? `(${activeCounts.size})` : ""}`}
@@ -249,31 +191,7 @@ const Filters = () => {
             })}
           </ul>
         </FilterGroup>
-         <FilterGroup 
-            title={`Size ${activeCounts.size ? `(${activeCounts.size})` : ""}`}
-            k="size"
-            expanded={expanded.size}
-            setExpanded={setExpanded}
-        >
-          <ul className="grid grid-cols-5 gap-2">
-            {SIZES.map((s) => {
-              const checked = getArrayParam(search, "size").includes(s);
-              return (
-                <li key={s}>
-                  <label className="inline-flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 accent-dark-900 cursor-pointer"
-                      checked={checked}
-                      onChange={() => onToggle("size", s)}
-                    />
-                    <span className="text-body">{s}</span>
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </FilterGroup>
+       
 
         <FilterGroup 
             title={`League ${activeCounts.league ? `(${activeCounts.league})` : ""}`}
@@ -294,31 +212,6 @@ const Filters = () => {
                   />
                   <label htmlFor={`league-${l}`} className="text-body capitalize">
                     {l}
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        </FilterGroup>
-        <FilterGroup 
-            title={`Team ${activeCounts.team ? `(${activeCounts.league})` : ""}`}
-            k="team"
-            expanded={expanded.team}
-            setExpanded={setExpanded}>
-          <ul className="grid grid-cols-2 gap-2">
-            {TEAMS.map((t) => {
-              const checked = getArrayParam(search, "team").includes(t);
-              return (
-                <li key={t} className="flex items-center gap-2">
-                  <input
-                    id={`team-${t}`}
-                    type="checkbox"
-                    className="h-4 w-4 accent-dark-900 cursor-pointer"
-                    checked={checked}
-                    onChange={() => onToggle("team", t)}
-                  />
-                  <label htmlFor={`team-${t}`} className="text-body capitalize">
-                    {t}
                   </label>
                 </li>
               );
