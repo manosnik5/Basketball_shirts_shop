@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { placeOrder } from "@/lib/actions/order";
 import { withAuth } from "@/lib/api-auth";
 
