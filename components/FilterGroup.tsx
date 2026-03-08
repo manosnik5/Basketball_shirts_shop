@@ -15,7 +15,7 @@ const FilterGroup = ({ title, k, expanded, setExpanded, children }: FilterGroupP
   return (
     <div className=" py-4">
       <button
-        className="flex w-full items-center justify-between text-body-medium text-text-dark"
+        className="flex w-full items-center justify-between text-body-medium text-text-dark cursor-pointer"
         onClick={() => setExpanded((s) => ({ ...s, [k]: !s[k] }))}
         aria-expanded={expanded}
         aria-controls={`${k}-section`}
