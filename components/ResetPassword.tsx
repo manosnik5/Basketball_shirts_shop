@@ -24,30 +24,25 @@ const ResetPassword = ({token}: ResetPasswordFormProps) => {
         setErrors({});
         
         const formData = new FormData(e.currentTarget)
-        // Get raw password (passwords don't need HTML sanitization)
         const password = String(formData.get("password"))
         const confirmPassword = String(formData.get("ConfirmPassword"))
         
-        // Validate password is not empty
         if(!password) {
             setErrors({ password: "Please enter your password" });
             return;
         }
         
-        // Validate password strength
         const passwordValidation = validatePasswordStrength(password);
         if (!passwordValidation.isValid) {
             setErrors({ password: passwordValidation.errors[0] });
             return;
         }
         
-        // Validate passwords match
         if(password !== confirmPassword) {
             setErrors({ confirmPassword: "Passwords do not match" });
             return;
         }
         
-        // Additional security: Check for suspicious patterns
         if (password.includes('<') || password.includes('>')) {
             setErrors({ password: "Password contains invalid characters" });
             return;
@@ -64,7 +59,6 @@ const ResetPassword = ({token}: ResetPasswordFormProps) => {
                     setIsPending(false)
                 },
                 onError: (err) => {
-                    // Sanitize error message before displaying
                     const sanitizedError = sanitizeString(String(err));
                     alert(sanitizedError)
                 },
@@ -85,7 +79,6 @@ const ResetPassword = ({token}: ResetPasswordFormProps) => {
 
     return (
         <form className='max-w-sm w-full space-y-4' onSubmit={handleSubmit}>
-            {/* ... rest of the form ... */}
             <div className="space-y-1 text-start">
                 <div className="flex justify-between items-center gap-2">
                     <label htmlFor="password" className="text-caption text-dark-900">

@@ -5,12 +5,8 @@ import Image from "next/image"
 import { useEffect } from "react"
 import { socialLinks, footerColumns } from "@/lib/constants"
 
-
-
 const Footer = () => {
   useEffect(() => {
-    
-  
       const handleHashScroll = () => {
         const hash = window.location.hash;
         if (hash) {

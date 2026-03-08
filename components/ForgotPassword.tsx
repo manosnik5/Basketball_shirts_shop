@@ -18,22 +18,18 @@ const ForgotPassword = () => {
         const formData = new FormData(e.currentTarget)
         const rawEmail = String(formData.get("email"))
 
-        // Validate email is not empty
         if(!rawEmail) {
             setError("Please enter your email");
             return;
         }
 
-        // Sanitize email (removes HTML tags, converts to lowercase, trims)
         const email = sanitizeEmail(rawEmail);
 
-        // Validate email format
         if(!validateEmail(email)) {
             setError("Please enter a valid email address");
             return;
         }
 
-        // Additional security: Check for suspicious patterns
         if (email.includes('<') || email.includes('>') || email.includes('script')) {
             setError("Email contains invalid characters");
             return;
@@ -50,7 +46,6 @@ const ForgotPassword = () => {
                     setIsPending(false)
                 },
                 onError: (err) => {
-                    // Sanitize error message before displaying
                     const sanitizedError = sanitizeString(String(err));
                     setError(sanitizedError);
                 },
@@ -72,7 +67,7 @@ const ForgotPassword = () => {
                         id="email"
                         onChange={(e) => {
                             setHasEmailValue(e.target.value !== "")
-                            // Clear error when user types
+                            
                             if (error) {
                                 setError("")
                             }

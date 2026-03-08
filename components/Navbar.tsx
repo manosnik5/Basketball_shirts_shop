@@ -8,14 +8,11 @@ import { useSession } from "@/lib/auth-client";
 import { signOut } from "@/lib/auth-client";
 import { NAV_LINKS } from "@/lib/constants"
 
-
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [openUser, setOpenUser] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const {data: session} = useSession();
-
-  console.log("Session in Navbar:", session);
 
   const handleMenuButton = () => {
     if (!openUser) {
@@ -56,7 +53,7 @@ const Navbar = () => {
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("resize", handleResize);
-  };
+    };
   },[])
 
   return (
@@ -77,22 +74,19 @@ const Navbar = () => {
           <div className={`${(openMenu || openUser) && "hidden"} `}>
              <Image src="/shopping_cart_black.png" alt="NextRide" width={21} height={21} priority className="cursor-pointer"></Image>
           </div>
-          
           <button onClick={() => setOpenUser((e) => !e)} className={`p-1.5 relative cursor-pointer ${(openMenu || openUser) && "hidden"}`}>
              <Image src="/user_black.png" alt="NextRide" width={20} height={20} priority></Image>
              {session?.user && (
                <span className="absolute top-0 right-0 block w-2 h-2 bg-green-500 rounded-full"></span>
              )}
-
-             
           </button> 
         </div>
-       <button
-       type="button"
-       className={`p-2 ${!openUser && "md:hidden"}`}
-       onClick={handleMenuButton}>
-        <Image src={(openMenu || openUser) ? "/close_black.png" : "/menu_black.png"} alt="NextRide" width={25} height={25} priority className="cursor-pointer pt-1"></Image>
-       </button>
+        <button
+        type="button"
+        className={`p-2 ${!openUser && "md:hidden"}`}
+        onClick={handleMenuButton}>
+          <Image src={(openMenu || openUser) ? "/close_black.png" : "/menu_black.png"} alt="NextRide" width={25} height={25} priority className="cursor-pointer pt-1"></Image>
+        </button>
       </nav>
 
       {(openMenu && !openUser) && (
@@ -127,11 +121,8 @@ const Navbar = () => {
                       </Link>
                     </Button>
                   )}
-                   <Button variant="destructive" className="cursor-pointer" onClick={handleSignOut}>Sign Out</Button>
-                  
-                </div>
-               
-                
+                   <Button variant="destructive" className="cursor-pointer" onClick={handleSignOut}>Sign Out</Button>                
+                </div>                    
                ) : (
                 <div className="flex flex-col gap-8">
                <Link href="/auth/sign-in">
@@ -148,13 +139,9 @@ const Navbar = () => {
               </div>
                )
               }
-               
-             
-        
-    
           </div>
         </div>
-      )}
+    )}
 </header>
   )
 }

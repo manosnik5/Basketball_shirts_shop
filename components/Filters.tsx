@@ -6,8 +6,6 @@ import { getArrayParam, removeParams, toggleArrayParam } from "@/lib/utils/query
 import FilterGroup from "./FilterGroup";
 import { BRANDS, PRICES, LEAGUES } from "@/lib/constants";
 
-
-
 type GroupKey = "brand" | "league" | "team" | "size" | "price";
 
 const Filters = () => {
@@ -191,8 +189,6 @@ const Filters = () => {
             })}
           </ul>
         </FilterGroup>
-       
-
         <FilterGroup 
             title={`League ${activeCounts.league ? `(${activeCounts.league})` : ""}`}
             k="league"
@@ -218,9 +214,6 @@ const Filters = () => {
             })}
           </ul>
         </FilterGroup>
-
-       
-
         <FilterGroup 
           title={`Price ${activeCounts.price ? `(${activeCounts.size})` : ""}`}
             k="price"

@@ -37,7 +37,7 @@ export default function ShirtCard({ shirt, isAdmin }: ShirtCardProps) {
                 if (confirm("Are you sure you want to delete this jersey?")) {
                   mutate(shirt.id, {
                     onSuccess: () => {
-                        router.refresh(); // ✅ reloads the page data
+                        router.refresh();
                       },
                   });
                   
