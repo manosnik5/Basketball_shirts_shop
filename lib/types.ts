@@ -41,3 +41,16 @@ export interface CreateShirtInput {
   imageUrls: string[];
 }
 
+export interface FilterParams {
+  search?: string;
+  sizeSlugs?: string[];
+  brandSlugs?: string[];
+  leagueSlugs?: string[];
+  teamSlugs?: string[];
+  priceMin?: number;
+  priceMax?: number;
+  priceRanges?: [number | undefined, number | undefined][];
+  sort?: "newest" | "oldest" | "price_asc" | "price_desc" | "featured";
+  page?: number;
+  limit?: number;
+}
