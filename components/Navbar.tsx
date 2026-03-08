@@ -6,30 +6,16 @@ import { Button } from "@/components/ui/button"
 import { useState, useEffect } from "react"
 import { useSession } from "@/lib/auth-client";
 import { signOut } from "@/lib/auth-client";
+import { NAV_LINKS } from "@/lib/constants"
 
-const NAV_LINKS = [
-  {
-    label: "Home", href: "/",
-  },
-  {
-    label: "Jerseys", href: "/jerseys",
-  },
-  {
-    label: "T-Shirts", href: "/tshirts",
-  },
-  {
-    label: "Teams", href: "/teams",
-  },
-  {
-    label: "Contact", href: "/contact",
-  },
-] as const;
 
 const Navbar = () => {
-  const [openMenu, setOpenMenu] = useState<Boolean>(false);
-  const [openUser, setOpenUser] = useState<Boolean>(false);
-  const [scrolled, setScrolled] = useState<Boolean>(false);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [openUser, setOpenUser] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const {data: session} = useSession();
+
+  console.log("Session in Navbar:", session);
 
   const handleMenuButton = () => {
     if (!openUser) {
@@ -132,13 +118,36 @@ const Navbar = () => {
         <div id="user_menu" className={`fixed top-16 w-full bg-light min-h-screen`}>
           <div className="space-y-10 container mx-auto px-4 sm:px-6 py-10 flex flex-col items-start">
               
-               {session?.user ? (
-                <Button variant="destructive" className="cursor-pointer" onClick={handleSignOut}>Sign Out</Button>
-               ) : <Link href="/sign-in">
+              {session?.user ? (
+                <div className="flex flex-col gap-8">
+                  {session?.user?.role === 'ADMIN' && (
+                    <Button variant="default" className="cursor-pointer">
+                      <Link href="/admin/dashboard">
+                        Admin DashBoard
+                      </Link>
+                    </Button>
+                  )}
+                   <Button variant="destructive" className="cursor-pointer" onClick={handleSignOut}>Sign Out</Button>
+                  
+                </div>
+               
+                
+               ) : (
+                <div className="flex flex-col gap-8">
+               <Link href="/auth/sign-in">
                 <button>
                   Sign In
                 </button>
-              </Link>}
+              </Link>
+              <Link href="/auth/sign-up">
+                <button>
+                  Sign Up
+                </button>
+              </Link>
+              
+              </div>
+               )
+              }
                
              
         
