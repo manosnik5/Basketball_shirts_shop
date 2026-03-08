@@ -14,7 +14,6 @@ export async function HandleAuthAction(formData: FormData, mode: "sign-in" | "si
       return { success: true, redirect: "/auth/sign-in" };
     }
 
-    
     const result = await signIn.email({ email, password });
      if (result.error) {
       const errCode = result.error.code ?? "UNKNOWN";
@@ -25,7 +24,6 @@ export async function HandleAuthAction(formData: FormData, mode: "sign-in" | "si
         return { success: false, redirect: "/auth/verify?error=email_not_verified", error: "Email not verified" };
       }
 
-      // Other sign-in errors
       throw new Error(errMsg);
     }
 
@@ -37,14 +35,12 @@ export async function HandleAuthAction(formData: FormData, mode: "sign-in" | "si
   }
 }
 
-
 export const googleAuth = async () => {
     await signIn.social({
         provider: "google",
         callbackURL: "/",
         errorCallbackURL: "/auth/sign-in",
-        fetchOptions: {
-           
+        fetchOptions: {      
         }
     })
 }
