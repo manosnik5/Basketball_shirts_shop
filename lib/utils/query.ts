@@ -15,11 +15,11 @@ export function parseQuery(search: string | URLSearchParams): QueryObject {
  * Converts an object into a query string (without array brackets []),
  * skipping null/empty values.
  */
-export function stringifyQuery(query: Record<string, any>): string {
+export function stringifyQuery(query: Record<string, QueryValue>): string {
   return qs.stringify(query, {
     skipNull: true,
     skipEmptyString: true,
-    arrayFormat: "none", // 👈 keeps URL clean, e.g. gender=men&color=red
+    arrayFormat: "none",
   });
 }
 
