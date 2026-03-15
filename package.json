@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "prisma generate && next dev --turbopack",
-    "build": "prisma generate && next build --turbopack",
-    "start": "next start",
-    "lint": "eslint"
-  },
+  "dev": "./node_modules/.bin/prisma generate && next dev --turbopack",
+  "build": "./node_modules/.bin/prisma generate && next build --turbopack",
+  "start": "next start",
+  "lint": "eslint"
+},
   "dependencies": {
     "@prisma/client": "6.17.1",
     "@radix-ui/react-select": "^2.2.6",
