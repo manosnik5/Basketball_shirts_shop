@@ -5,8 +5,8 @@ import {useRouter} from "next/navigation";
 import { useState } from "react";
 
 const SendVerificationEmailForm = () => {
-    const [hasEmailValue, setHasEmailValue] = useState<Boolean>(false);
-    const [isPending, setIsPending] = useState<Boolean>(false);
+    const [hasEmailValue, setHasEmailValue] = useState<boolean>(false);
+    const [isPending, setIsPending] = useState<boolean>(false);
     const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
