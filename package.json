@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "./node_modules/.bin/prisma generate && next dev --turbopack",
-  "build": "./node_modules/.bin/prisma generate && next build --turbopack",
+  "dev": "npx --no-install prisma generate && next dev --turbopack",
+  "build": "npx --no-install prisma generate && next build --turbopack",
   "start": "next start",
   "lint": "eslint"
 },
