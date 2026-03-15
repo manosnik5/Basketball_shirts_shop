@@ -8,8 +8,7 @@ import { useState } from "react";
 import { useCreateOrder } from "@/lib/hooks/useCreateOrder";
 import { useRouter } from "next/navigation";
 import { validateCardNumber, validateExpiryDate, validateCVV, sanitizeString } from "@/lib/validation";
-
-
+import { CartItem } from "@/lib/types";
 
 const formatPrice = (price: number) => `${price.toFixed(2)}€`;
 
@@ -22,12 +21,14 @@ const PaymentPage = () => {
   const { data: session } = useSession();
   const userId = session?.user?.id;
   const { data: cart, isLoading, isError } = useGetCartById(userId);
-  const { data, isLoading2, isError2 } = useGetAddress(userId);
+  const { data, isLoading: isAddressLoading, isError: isAddressError } = useGetAddress(userId);
+
   const { mutate: createOrder, isPending } = useCreateOrder();
 
   if (!userId) return <p>Please login</p>;
-  if (isLoading2) return <p>Loading address...</p>;
-  if (isError2) return <p>Failed to load address</p>;
+  if (isAddressLoading) return <p>Loading address...</p>;
+  if (isAddressError) return <p>Failed to load address</p>;
+
 
   const address = data?.address;
 
@@ -37,12 +38,12 @@ const PaymentPage = () => {
   if (isError) return <p>Failed to load cart.</p>;
   if (!cart || cart.items.length === 0) return <p>Your cart is empty.</p>;
 
-  const cartTotal = cart.items.reduce((total: number, item) => {
+  const cartTotal = cart.items.reduce((total: number, item: CartItem) => {
     const price = Number(item.variant.salePrice ?? item.variant.price);
     return total + price * item.quantity;
   }, 0);
 
-  const totalItems = cart.items.reduce((sum: number, item) => sum + item.quantity, 0);
+  const totalItems = cart.items.reduce((sum: number, item: CartItem) => sum + item.quantity, 0);
 
   const handlePaymentMethodChange = (method: string) => {
     setSelectedPaymentMethod(method)
@@ -100,20 +101,34 @@ const PaymentPage = () => {
     }
     
     const sanitizedPaymentMethod = sanitizeString(selectedPaymentMethod);
+
+    const paymentMethodMap: Record<string, "paypal" | "cod" | "stripe"> = {
+      paypal: "paypal",
+      klarna: "cod",       
+      credit_card: "stripe", 
+    };
+
+    const mappedPaymentMethod = paymentMethodMap[sanitizedPaymentMethod];
+
+    if (!mappedPaymentMethod) {
+      setGeneralError("Invalid payment method selected");
+      return;
+    }
     
     createOrder(
       {
         userId,
         shippingAddressId: address.id,
         billingAddressId: address.id,
-        paymentMethod: sanitizedPaymentMethod === "credit_card" ? "card" : sanitizedPaymentMethod,
+        paymentMethod: mappedPaymentMethod
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           router.push(`/order-success`);
         },
-        onError: (error: any) => {
-          setGeneralError(error.message || "Failed to place order. Please try again.");
+        onError: (error: unknown) => {
+          const message = error instanceof Error ? error.message : "Failed to place order. Please try again.";
+          setGeneralError(message);
         }
       }
     );
@@ -218,6 +233,17 @@ const PaymentPage = () => {
             </a>
             .
           </p>
+          {generalError && (
+            <p className="text-red-500 text-sm mb-2">{generalError}</p>
+          )}
+          <button
+            type="submit"
+            disabled={isPending}
+            className="bg-[#E61A4D] text-white mb-4 mt-4 py-3 px-6 rounded-full w-full md:w-[50%] hover:opacity-90 transition hover:cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handlePlaceOrder}
+          >
+            {isPending ? "Placing Order..." : "Place Order"}
+          </button>
         <button
           type="submit"
           className=" bg-[#E61A4D] text-white mb-4 mt-4 py-3 px-6 rounded-full w-full md:w-[50%] hover:opacity-90 transition hover:cursor-pointer"
@@ -245,7 +271,7 @@ const PaymentPage = () => {
           </header>
           <h2 className="text-dark font-medium">Items({totalItems})</h2>
           
-           {cart.items.map((item) => {
+           {cart.items.map((item: CartItem) => {
             const primaryShirtImage =
             item.variant.shirt.images.find((img) => img.isPrimary) ||
             item.variant.shirt.images[0];
@@ -253,9 +279,6 @@ const PaymentPage = () => {
           const imageUrl = primaryShirtImage?.url
             ? `/${primaryShirtImage.url}`
             : "/placeholder.png";
-
-          const itemPrice = Number(item.variant.salePrice ?? item.variant.price);
-          const itemTotal = itemPrice * item.quantity;
 
           return (
 
