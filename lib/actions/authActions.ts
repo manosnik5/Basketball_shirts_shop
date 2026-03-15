@@ -29,10 +29,10 @@ export async function HandleAuthAction(formData: FormData, mode: "sign-in" | "si
 
     
     return { success: true, redirect: "/" };
-  } catch (e: any) {
-    console.error("Auth error:", e);
-    return { success: false, error: e.message };
-  }
+  } catch (e: unknown) {
+      console.error("Auth error:", e);
+      return { success: false, error: e instanceof Error ? e.message : "An unexpected error occurred" };
+    }
 }
 
 export const googleAuth = async () => {

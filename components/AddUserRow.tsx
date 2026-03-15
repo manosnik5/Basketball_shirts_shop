@@ -13,7 +13,6 @@ import {
 
 const AddUserRow = () => {
     const [isAddUserButtonPressed, setIsAddUserButtonPressed] = useState(false);
-    const [isAdding, setIsAdding] = useState(false);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [role, setRole] = useState('USER');
@@ -57,14 +56,14 @@ const AddUserRow = () => {
             setEmail('');
             setPassword('');
             setRole('USER');
-            setIsAdding(false);
             
 
             window.location.reload();
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error('Error adding user:', err);
-            setError(err.message || 'Failed to add user');
-        } finally {
+            setError(err instanceof Error ? err.message : 'Failed to add user');
+        }
+        finally {
             setIsLoading(false);
         }
     };
@@ -123,7 +122,6 @@ const AddUserRow = () => {
                         </button>
                         <button
                             onClick={() => {
-                                setIsAdding(false);
                                 setName('');
                                 setEmail('');
                                 setPassword('');
@@ -141,18 +139,7 @@ const AddUserRow = () => {
                         <div className='text-xs text-red-600'>{error}</div>
                     )}
                 </div>
-  
-        
-      
-            
           
-               
-           
-          
-                   
-                 
-          
-                    
            </div>: 
         <div className="w-full flex justify-center py-2">
             <button onClick={() => setIsAddUserButtonPressed((e) => !e)} className="hover:opacity-70 cursor-pointer">

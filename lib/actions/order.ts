@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { sanitizeString } from "@/lib/validation";
+import { PaymentMethod } from "@/lib/generated/prisma";
 
 export async function placeOrder(
   userId: string,
@@ -68,7 +69,7 @@ export async function placeOrder(
 
         payments: {
           create: {
-            method: sanitizedPaymentMethod as any,
+            method: sanitizedPaymentMethod as PaymentMethod,
             status: "completed",
             paidAt: new Date(),
             transactionId: `${sanitizedPaymentMethod.toUpperCase()}_${Date.now()}`,

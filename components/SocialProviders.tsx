@@ -15,7 +15,6 @@ export const SocialProviders = ({variant, setIsPending }: Props) => {
       setIsPending (true);
     }
     
-
     try {
       await signIn.social({
         provider: "google",
@@ -25,9 +24,9 @@ export const SocialProviders = ({variant, setIsPending }: Props) => {
 
 
       console.log("Redirecting to Google...");
-    } catch (error: any) {
-      console.error("Google sign-in failed:", error);
-      alert("Google sign-in failed: " + error?.message || error);
+    } catch (error: unknown) {
+        console.error("Google sign-in failed:", error);
+        alert("Google sign-in failed: " + (error instanceof Error ? error.message : "Unknown error"));
     } finally {
       if (setIsPending) setIsPending(false);
     }

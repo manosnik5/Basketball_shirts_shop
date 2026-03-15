@@ -1,8 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import DOMPurify from "isomorphic-dompurify"; // sanitize text to prevent XSS
-
+import DOMPurify from "isomorphic-dompurify"; 
 interface ShippingData {
   userId: string;
   firstname: string;
@@ -35,8 +34,8 @@ export async function submitShippingDetails(data: ShippingData) {
     const address = await prisma.address.create({ data: cleanData });
 
     return { success: true, address };
-  } catch (error: any) {
-    return { error: error.message };
+  } catch (error: unknown) {
+    return { error: error instanceof Error ? error.message : "Failed to submit shipping details" };
   }
 }
 

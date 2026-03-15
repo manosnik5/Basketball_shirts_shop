@@ -27,9 +27,9 @@ export const DeleteUserButton = ({userId}: DeleteUserButtonProps) => {
             console.log("User deleted successfully");
             
             window.location.reload();
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Failed to delete user:", error);
-            alert(error.message || 'Failed to delete user');
+            alert(error instanceof Error ? error.message : 'Failed to delete user');
         } finally {
             setIsPending(false);
         }
