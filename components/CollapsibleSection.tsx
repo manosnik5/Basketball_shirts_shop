@@ -15,7 +15,6 @@ const CollapsibleSection = ({
     title,
     children,
     defaultOpen = false,
-    rightMeta,
     className = ""
 }: CollapsibleSectionProps) => {
     const [open, setOpen] = useState(defaultOpen);
