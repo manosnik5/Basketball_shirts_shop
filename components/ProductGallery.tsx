@@ -12,9 +12,9 @@ export interface ProductGalleryProps {
 
 
 const ProductGallery = ({
-    shirtId,
+    shirtId: _shirtId,
+    initialVariantIndex: _initialVariantIndex,
     images,
-    initialVariantIndex = 0,
     className = "",
 }: ProductGalleryProps) => {
   const [activeIndex, setActiveIndex] = useState(0);
