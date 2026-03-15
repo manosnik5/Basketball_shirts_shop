@@ -1,17 +1,15 @@
 "use client";
 
 import { useGetCartById } from "@/lib/hooks/useGetCartById";
-import { useSession } from "@/lib/auth-client";
 import { PAYMENT_METHODS } from "@/lib/constants";
 import Image from "next/image";
 import Link from "next/link";
 import { useRemoveFromCart } from "@/lib/hooks/useRemoveFromCart";
 import { useRouter } from "next/navigation";
+import { CartItem } from "@/lib/types";
 
 const Cart = () => {
   const router = useRouter();
-  const { data: session } = useSession();
-  const userId = session?.user?.id;
 
   const { data: cart, isLoading, isError } = useGetCartById();
   const { mutate: removeFromCartItem } = useRemoveFromCart();
@@ -20,7 +18,7 @@ const Cart = () => {
   if (isError) return <p>Failed to load cart.</p>;
   if (!cart || cart.items.length === 0) return <p>Your cart is empty.</p>;
 
-  const cartTotal = cart.items.reduce((total: number, item) => {
+  const cartTotal = cart.items.reduce((total: number, item: CartItem) => {
     const price = Number(item.variant.salePrice ?? item.variant.price);
     return total + price * item.quantity;
   }, 0);
@@ -30,7 +28,7 @@ const Cart = () => {
     <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_480px]">
       
       <div className="flex flex-col relative w-full rounded-xl bg-light gap-4 p-4 shadow-lg">
-        {cart.items.map((item) => {
+        {cart.items.map((item: CartItem) => {
           const primaryShirtImage =
             item.variant.shirt.images.find((img) => img.isPrimary) ||
             item.variant.shirt.images[0];
