@@ -68,6 +68,7 @@ export const POSITIONS = [
 export const BRANDS = [
   "Nike",
   "Adidas", 
+  "Jordan"
 ] 
 
 export const LEAGUES = [
@@ -198,6 +199,7 @@ export const BRAND_SLUGS: Record<string, string> = {
   "Nike": "nike",
   "Adidas": "adidas",
   "Puma": "puma",
+  "Jordan": "jordan",
 };
 
 
