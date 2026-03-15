@@ -6,6 +6,7 @@ import { toSlug } from "../utils";
 import { Shirt } from "../types";
 import { headers } from "next/headers";
 import {auth} from "@/lib/auth";
+import { Prisma } from "@/lib/generated/prisma";
 
 export async function getAllShirts(filters: FilterParams) {
   const {
@@ -22,7 +23,7 @@ export async function getAllShirts(filters: FilterParams) {
     limit = 24,
   } = filters;
 
-  const where: any = { isPublished: true };
+  const where: Prisma.ShirtWhereInput = { isPublished: true };
 
   if (search && search.trim()) {
     where.OR = [
@@ -43,11 +44,11 @@ export async function getAllShirts(filters: FilterParams) {
     };
   }
 
-  const orPriceConditions: any[] = [];
+  const orPriceConditions: Prisma.ShirtWhereInput[] = [];
 
   if (priceRanges?.length) {
     for (const [min, max] of priceRanges) {
-      const priceFilter: any = {};
+      const priceFilter: Prisma.DecimalFilter = {};
       if (min !== undefined) priceFilter.gte = min;
       if (max !== undefined) priceFilter.lte = max;
 
@@ -56,7 +57,7 @@ export async function getAllShirts(filters: FilterParams) {
       });
     }
   } else if (priceMin !== undefined || priceMax !== undefined) {
-    const priceFilter: any = {};
+    const priceFilter: Prisma.DecimalFilter<"ShirtVariant"> = {};
     if (priceMin !== undefined) priceFilter.gte = priceMin;
     if (priceMax !== undefined) priceFilter.lte = priceMax;
 
@@ -70,7 +71,7 @@ export async function getAllShirts(filters: FilterParams) {
   }
 
 
-  let orderBy: any = { createdAt: 'desc' }; 
+  let orderBy: Prisma.ShirtOrderByWithRelationInput = { createdAt: 'desc' };
 
   if (sort === 'oldest') {
     orderBy = { createdAt: 'asc' };
@@ -246,7 +247,6 @@ export const getFeaturedShirts = async (shirtId: string) => {
     );
 
     const minPrice = prices.length ? Math.min(...prices) : null;
-    const maxPrice = prices.length ? Math.max(...prices) : null;
 
     const defaultVariant = shirt.defaultVariantId
       ? shirt.variants.find(v => v.id === shirt.defaultVariantId)
