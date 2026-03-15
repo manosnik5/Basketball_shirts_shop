@@ -125,9 +125,10 @@ const AddJersey = () => {
       setFiles([]);
       setPreviews([]);
       e.currentTarget.reset();
-    } catch (err: any) {
-      alert(err.message);
-    }
+    } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : "Something went wrong";
+        alert(message);
+      }
   };
 
   const handleFiles = (newFiles: FileList) => {
@@ -217,34 +218,64 @@ const AddJersey = () => {
 
       <div className="col-span-2">
         <input name="PlayerName" placeholder="Player Name" className="w-full p-3 border rounded-lg" maxLength={50} required />
+        {fieldErrors.PlayerName && <p className="text-sm text-red-500 mt-1">{fieldErrors.PlayerName}</p>}
       </div>
-       <div className="col-span-1">
-        <select name="position" className="w-full p-3 border rounded-lg" required>{POSITIONS.map(position => <option key={position} value={position}>{position}</option>)}</select>
+
+      <div className="col-span-1">
+        <select name="position" className="w-full p-3 border rounded-lg" required>
+          {POSITIONS.map(position => <option key={position} value={position}>{position}</option>)}
+        </select>
+        {fieldErrors.position && <p className="text-sm text-red-500 mt-1">{fieldErrors.position}</p>}
       </div>
+
       <div className="col-span-1">
         <input type="number" name="JerseyNumber" placeholder="Jersey Number" className="w-full p-3 border rounded-lg" min={0} max={100} step="1" required />
+        {fieldErrors.JerseyNumber && <p className="text-sm text-red-500 mt-1">{fieldErrors.JerseyNumber}</p>}
       </div>
+
       <div className="col-span-2">
         <input name="jerseyName" placeholder="Jersey Name" className="w-full p-3 border rounded-lg" maxLength={50} required />
+        {fieldErrors.jerseyName && <p className="text-sm text-red-500 mt-1">{fieldErrors.jerseyName}</p>}
       </div>
+
       <div className="col-span-2">
         <textarea name="jerseyDescription" placeholder="Jersey description" className="w-full p-3 border rounded-lg resize-none" maxLength={300} rows={3} required />
+        {fieldErrors.jerseyDescription && <p className="text-sm text-red-500 mt-1">{fieldErrors.jerseyDescription}</p>}
       </div>
+
       <div className="col-span-1">
-        <select name="brand" className="w-full p-3 border rounded-lg" required>{BRANDS.map(brand => <option key={brand} value={brand}>{brand}</option>)}</select>
+        <select name="brand" className="w-full p-3 border rounded-lg" required>
+          {BRANDS.map(brand => <option key={brand} value={brand}>{brand}</option>)}
+        </select>
+        {fieldErrors.brand && <p className="text-sm text-red-500 mt-1">{fieldErrors.brand}</p>}
       </div>
+
       <div className="col-span-1">
-        <select name="league" className="w-full p-3 border rounded-lg" required>{LEAGUES.map(league => <option key={league} value={league}>{league}</option>)}</select>
+        <select name="league" className="w-full p-3 border rounded-lg" required>
+          {LEAGUES.map(league => <option key={league} value={league}>{league}</option>)}
+        </select>
+        {fieldErrors.league && <p className="text-sm text-red-500 mt-1">{fieldErrors.league}</p>}
       </div>
+
       <div className="col-span-1">
-        <select name="team" className="w-full p-3 border rounded-lg" required>{TEAMS.map(team => <option key={team} value={team}>{team}</option>)}</select>
+        <select name="team" className="w-full p-3 border rounded-lg" required>
+          {TEAMS.map(team => <option key={team} value={team}>{team}</option>)}
+        </select>
+        {fieldErrors.team && <p className="text-sm text-red-500 mt-1">{fieldErrors.team}</p>}
       </div>
+
       <div className="col-span-1">
         <input type="number" name="price" placeholder="Price (€)" className="w-full p-3 border rounded-lg" min={0} step={0.01} required />
+        {fieldErrors.price && <p className="text-sm text-red-500 mt-1">{fieldErrors.price}</p>}
       </div>
+
       <div className="col-span-2">
         <input name="sku" placeholder="Sku" className="w-full p-3 border rounded-lg" maxLength={15} required />
+        {fieldErrors.sku && <p className="text-sm text-red-500 mt-1">{fieldErrors.sku}</p>}
       </div>
+
+      {fieldErrors.images && <p className="text-sm text-red-500 text-center col-span-2">{fieldErrors.images}</p>}
+
       <button type="submit" className="flex items-center justify-center gap-2 rounded-xl bg-green-600 text-white hover:bg-green-700 px-6 py-4 text-body-medium transition hover:opacity-90 hover:cursor-pointer disabled:opacity-50 mt-5 col-span-2">Add</button>
     </form>
   );
