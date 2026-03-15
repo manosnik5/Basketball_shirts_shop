@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "npx prisma generate && next dev --turbopack",
-  "build": "npx prisma generate && next build --turbopack",
-  "start": "next start",
-  "lint": "eslint"
-},
+    "dev": "npx prisma generate && next dev --turbopack",
+    "build": "npx prisma generate && next build --turbopack",
+    "start": "next start",
+    "lint": "eslint"
+  },
   "dependencies": {
+    "@prisma/adapter-neon": "^7.5.0",
     "@prisma/client": "^6.17.1",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
