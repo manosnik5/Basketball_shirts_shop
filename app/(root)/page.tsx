@@ -3,11 +3,8 @@ import { getEuroleagueTeams, getNBATeams } from "@/lib/actions/teams"
 import Featured from "@/components/Featured"
 import AnimatedHeading from "@/components/AnimatedHeading"
 
-interface PageProps {
-  searchParams: { [key: string]: string | undefined }
-}
 
-const page = async ({searchParams}: PageProps) => {
+const page = async () => {
   const nbaTeams = await getNBATeams();
   const euroleagueTeams = await getEuroleagueTeams();
 
