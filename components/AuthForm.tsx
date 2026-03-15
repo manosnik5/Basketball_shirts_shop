@@ -38,12 +38,10 @@ const AuthForm = ({mode}: Props) => {
 
         const formData = new FormData(e.currentTarget);
         
-        // Get and sanitize form values
         const rawFullName = mode === "sign-up" ? String(formData.get("fullname")) : "";
         const rawEmail = String(formData.get("email"));
         const password = String(formData.get("password"));
 
-        // Validate Full Name (sign-up only)
         if (mode === "sign-up") {
             if (!rawFullName) {
                 setErrors(prev => ({ ...prev, fullname: "Please enter your full name" }));
