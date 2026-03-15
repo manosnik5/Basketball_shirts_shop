@@ -18,10 +18,10 @@ type FeaturedItem = {
   id: string;
   name: string;
   slug?: string;
-  mainImage?: string; 
-  logoUrl?: string;   
-  description?: string;
-  price?: number;
+  mainImage?: string | null; 
+  logoUrl?: string | null;     
+  description?: string | null; 
+  price?: number | null;       
 };
 
 interface FeaturedProps {
@@ -82,15 +82,15 @@ const Featured = ({ items, type }: FeaturedProps) => {
         <Slider className="p-0" key={isMobile ? "mobile" : "desktop"} {...settings}>
           {items.map((item) => (
             <div key={item.id} className="p-1">
-              <Card className="max-w-sm overflow-hidden shadow-lg rounded-lg "
+              <Card className="max-w-sm overflow-hidden shadow-lg rounded-lg cursor-pointer"
               onClick={() => handleItemClick(item)}>
                 <CardContent className="min-h-[30vh] xl:min-h-[32vh] space-y-5 md:space-y-0 xl:space-y-5">
                   <div className="relative w-full h-30 sm:h-50  rounded-lg overflow-hidden ">
                     <Image
-                      src={`/${type === "shirt" ? item.mainImage : item.logoUrl}`}
+                      src={`/${type === "shirt" ? (item.mainImage ?? "placeholder.png") : (item.logoUrl ?? "placeholder.png")}`}
                       alt={item.name}
                       fill
-                      className="object-contain hover:scale-105 max-h-25 max-w-25 sm:max-h-45 sm:max-w-45 transition-transform duration-300 ease-in-out self-center mx-auto hover:cursor-pointer"
+                      className="object-contain hover:scale-105 max-h-25 max-w-25 sm:max-h-45 sm:max-w-45 transition-transform duration-300 ease-in-out self-center mx-auto"
                       
                     />
                   </div>
@@ -103,7 +103,9 @@ const Featured = ({ items, type }: FeaturedProps) => {
                     <>
                     <h2 className="font-semibold text-lg">{item.name}</h2>
                       <p className="text-sm text-gray-600 line-clamp-3">{item.description}</p>
-                      <div className="text-text-dark font-medium text-lg">${item.price}</div>
+                      <div className="text-text-dark font-medium text-lg">
+                      {item.price != null ? `$${item.price}` : "N/A"}
+                    </div>
                     </>
                   )}
                 </CardContent>
