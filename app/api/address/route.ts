@@ -13,9 +13,10 @@ export async function GET(req: NextRequest) {
     const address = await getAddress(userId);
 
     return NextResponse.json({ address });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to fetch address";
     return NextResponse.json(
-      { error: error.message || "Failed to fetch address" },
+      { error: message },
       { status: 500 }
     );
   }

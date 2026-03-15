@@ -21,10 +21,10 @@ export const POST = withAuth(async (request, session) => {
     );
 
     return NextResponse.json(result);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Place order error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to place order" },
+      { error: error instanceof Error ? error.message : "Failed to place order" },
       { status: 500 }
     );
   }
