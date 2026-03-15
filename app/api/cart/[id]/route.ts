@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { removeFromCart } from "@/lib/actions/cart";
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = params; 
+    const { id } = await params; 
     const cart = await removeFromCart(id);
     return NextResponse.json(cart);
   } catch (err) {
