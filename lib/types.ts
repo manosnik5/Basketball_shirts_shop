@@ -54,3 +54,17 @@ export interface FilterParams {
   page?: number;
   limit?: number;
 }
+
+export type CartItem = {
+  id: string;
+  quantity: number;
+  variant: {
+    price: number;
+    salePrice?: number | null;
+    size: { name: string };
+    shirt: {
+      name: string;
+      images: { url: string; isPrimary: boolean }[];
+    };
+  };
+};
