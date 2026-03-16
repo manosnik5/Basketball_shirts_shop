@@ -244,13 +244,7 @@ const PaymentPage = () => {
           >
             {isPending ? "Placing Order..." : "Place Order"}
           </button>
-        <button
-          type="submit"
-          className=" bg-[#E61A4D] text-white mb-4 mt-4 py-3 px-6 rounded-full w-full md:w-[50%] hover:opacity-90 transition hover:cursor-pointer"
-          onClick={handlePlaceOrder}
-        >
-          Place Order
-        </button>
+       
         </div>
         </div>
         <div className="flex flex-col gap-6 border border-gray-300 p-8">
