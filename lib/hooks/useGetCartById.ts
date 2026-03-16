@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetCartById = (userId?: string) => {
+export const useGetCartById = () => {
   return useQuery({
-    queryKey: ["cart", userId],
+    queryKey: ["cart"],
     queryFn: async () => {
       const res = await fetch("/api/cart", {
         credentials: "include",
@@ -11,6 +11,5 @@ export const useGetCartById = (userId?: string) => {
       if (!res.ok) throw new Error("Failed to fetch cart");
       return res.json();
     },
-    enabled: !!userId,
   });
 };
