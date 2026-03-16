@@ -72,7 +72,10 @@ const Navbar = () => {
 
        <div className="flex items-center justify-center gap-6 p-1">
           <div className={`${(openMenu || openUser) && "hidden"} `}>
-             <Image src="/shopping_cart_black.png" alt="NextRide" width={21} height={21} priority className="cursor-pointer"></Image>
+            <Link href="/cart">
+                         <Image src="/shopping_cart_black.png" alt="NextRide" width={21} height={21} priority className="cursor-pointer"></Image>
+                      </Link>
+           
           </div>
           <button onClick={() => setOpenUser((e) => !e)} className={`p-1.5 relative cursor-pointer ${(openMenu || openUser) && "hidden"}`}>
              <Image src="/user_black.png" alt="NextRide" width={20} height={20} priority></Image>
