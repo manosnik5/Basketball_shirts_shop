@@ -20,7 +20,7 @@ const PaymentPage = () => {
   const [generalError, setGeneralError] = useState<string>("");
   const { data: session } = useSession();
   const userId = session?.user?.id;
-  const { data: cart, isLoading, isError } = useGetCartById(userId);
+  const { data: cart, isLoading, isError } = useGetCartById();
   const { data, isLoading: isAddressLoading, isError: isAddressError } = useGetAddress(userId);
 
   const { mutate: createOrder, isPending } = useCreateOrder();
