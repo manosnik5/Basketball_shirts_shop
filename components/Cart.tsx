@@ -14,6 +14,9 @@ const Cart = () => {
   const { data: cart, isLoading, isError } = useGetCartById();
   const { mutate: removeFromCartItem } = useRemoveFromCart();
 
+   console.log("cart data:", cart);        // 👈 add this
+  console.log("cart items:", cart?.items); // 👈 add this
+
   if (isLoading) return <p>Loading your cart...</p>;
   if (isError) return <p>Failed to load cart.</p>;
   if (!cart || cart.items.length === 0) return <p>Your cart is empty.</p>;
