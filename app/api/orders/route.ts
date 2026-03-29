@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
 import { placeOrder } from "@/lib/actions/order";
-import { withAuth } from "@/lib/api-auth";
+import { withOptionalAuth } from "@/lib/api-auth";
+import { getPendingShippingAddressId, clearPendingShippingAddressId } from "@/lib/actions/shipping";
 
-export const POST = withAuth(async (request, session) => {
+export const POST = withOptionalAuth(async (request, session) => {
   try {
     const body = await request.json();
-    const { shippingAddressId, billingAddressId } = body;
+    const { shippingAddressId, billingAddressId, paymentMethod } = body;
 
     if (!shippingAddressId || !billingAddressId) {
       return NextResponse.json(
@@ -13,12 +14,29 @@ export const POST = withAuth(async (request, session) => {
         { status: 400 }
       );
     }
-    
+
+
+    const userId = session?.user?.id;
+    if (!userId) {
+      const pendingAddressId = await getPendingShippingAddressId();
+      if (!pendingAddressId || pendingAddressId !== shippingAddressId) {
+        return NextResponse.json(
+          { error: "Invalid or expired shipping address" },
+          { status: 403 }
+        );
+      }
+    }
+
     const result = await placeOrder(
-      session.user.id,
+      userId,
       shippingAddressId,
-      billingAddressId
+      billingAddressId,
+      paymentMethod
     );
+
+    if (!userId) {
+      await clearPendingShippingAddressId();
+    }
 
     return NextResponse.json(result);
   } catch (error: unknown) {
