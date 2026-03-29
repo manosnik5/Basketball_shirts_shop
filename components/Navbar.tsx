@@ -7,12 +7,14 @@ import { useState, useEffect } from "react"
 import { useSession } from "@/lib/auth-client";
 import { signOut } from "@/lib/auth-client";
 import { NAV_LINKS } from "@/lib/constants"
+import { useMergeCartOnLogin } from "@/lib/hooks/useMergeCartOnLogin"
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const [openUser, setOpenUser] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const {data: session} = useSession();
+  useMergeCartOnLogin();
 
   const handleMenuButton = () => {
     if (!openUser) {
