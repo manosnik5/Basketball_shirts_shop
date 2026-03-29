@@ -211,10 +211,9 @@ export const SIZES = [
 ] 
 
 export const PRICES = [
-  { id: "0-50", label: "$0 - $50" },
-  { id: "50-100", label: "$50 - $100" },
-  { id: "100-150", label: "$100 - $150" },
-  { id: "150-", label: "Over $150" },
+  { id: "90-100", label: "$90 - $100" },
+  { id: "100-110", label: "$100 - $110" },
+  { id: "110-", label: "Over $110" },
 ] 
 
 export const COUNTRIES = [
