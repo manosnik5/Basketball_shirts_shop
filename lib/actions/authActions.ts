@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { signUp, signIn } from "@/lib/auth-client";
 
@@ -15,32 +15,20 @@ export async function HandleAuthAction(formData: FormData, mode: "sign-in" | "si
     }
 
     const result = await signIn.email({ email, password });
-     if (result.error) {
+    if (result.error) {
       const errCode = result.error.code ?? "UNKNOWN";
       const errMsg = result.error.message ?? "Unknown sign-in error";
 
       if (errCode === "EMAIL_NOT_VERIFIED") {
-        
         return { success: false, redirect: "/auth/verify?error=email_not_verified", error: "Email not verified" };
       }
 
       throw new Error(errMsg);
     }
 
-    
     return { success: true, redirect: "/" };
   } catch (e: unknown) {
-      console.error("Auth error:", e);
-      return { success: false, error: e instanceof Error ? e.message : "An unexpected error occurred" };
-    }
-}
-
-export const googleAuth = async () => {
-    await signIn.social({
-        provider: "google",
-        callbackURL: "/",
-        errorCallbackURL: "/auth/sign-in",
-        fetchOptions: {      
-        }
-    })
+    console.error("Auth error:", e);
+    return { success: false, error: e instanceof Error ? e.message : "An unexpected error occurred" };
+  }
 }
