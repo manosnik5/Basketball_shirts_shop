@@ -3,18 +3,24 @@
 import { prisma } from "@/lib/prisma";
 import { sanitizeString } from "@/lib/validation";
 import { PaymentMethod } from "@/lib/generated/prisma";
+import { getGuestId } from "@/lib/guest";
 
 export async function placeOrder(
-  userId: string,
+  userId: string | undefined,
   shippingAddressId: string,
   billingAddressId?: string,
   paymentMethod: string = "cod"
 ) {
-  if (!userId) throw new Error("Not authenticated");
+  // At least one identity is required
+  const guestId = !userId ? await getGuestId() : undefined;
+  if (!userId && !guestId) throw new Error("Not authenticated");
 
-  const sanitizedUserId = sanitizeString(userId);
+  const sanitizedUserId = userId ? sanitizeString(userId) : undefined;
+  const sanitizedGuestId = guestId ? sanitizeString(guestId) : undefined;
   const sanitizedShippingAddressId = sanitizeString(shippingAddressId);
-  const sanitizedBillingAddressId = billingAddressId ? sanitizeString(billingAddressId) : undefined;
+  const sanitizedBillingAddressId = billingAddressId
+    ? sanitizeString(billingAddressId)
+    : undefined;
   const sanitizedPaymentMethod = sanitizeString(paymentMethod);
 
   const validPaymentMethods = ["stripe", "paypal", "cod"];
@@ -22,8 +28,9 @@ export async function placeOrder(
     throw new Error("Invalid payment method");
   }
 
+  // Find cart by userId for authenticated users, guestId for guests
   const cart = await prisma.cart.findFirst({
-    where: { userId: sanitizedUserId },
+    where: sanitizedUserId ? { userId: sanitizedUserId } : { guestId: sanitizedGuestId },
     include: {
       items: {
         include: {
@@ -53,7 +60,8 @@ export async function placeOrder(
   const result = await prisma.$transaction(async (tx) => {
     const order = await tx.order.create({
       data: {
-        userId: sanitizedUserId,
+        // userId is optional — guest orders have no userId
+        ...(sanitizedUserId ? { userId: sanitizedUserId } : {}),
         status: "PAID",
         totalAmount,
         shippingAddressId: sanitizedShippingAddressId,
@@ -92,6 +100,12 @@ export async function placeOrder(
     await tx.cartItem.deleteMany({
       where: { cartId: cart.id },
     });
+
+    // Delete the guest cart itself after checkout so the guestId
+    // can't be reused to place duplicate orders
+    if (sanitizedGuestId) {
+      await tx.cart.delete({ where: { id: cart.id } });
+    }
 
     return order;
   });
