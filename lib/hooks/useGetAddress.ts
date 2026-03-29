@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetAddress = (userId?: string) => {
+export const useGetAddress = (userId?: string, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["address", userId],
     queryFn: async () => {
@@ -9,8 +9,8 @@ export const useGetAddress = (userId?: string) => {
       const res = await fetch(`/api/address?userId=${userId}`);
       if (!res.ok) throw new Error("Failed to fetch address");
 
-      return res.json(); 
+      return res.json();
     },
-    enabled: !!userId,
+    enabled: options?.enabled ?? !!userId,
   });
 };
