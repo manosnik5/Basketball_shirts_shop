@@ -10,6 +10,9 @@ const jost = Jost({
 export const metadata: Metadata = {
   title: "CourtStyle",
   description: "An e-commerce platform for basketball jerseys",
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootShell({
