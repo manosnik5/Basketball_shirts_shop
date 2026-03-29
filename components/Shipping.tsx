@@ -36,16 +36,12 @@ const Shipping = () => {
     e.preventDefault();
     setErrors({});
 
-    if (!userId) {
-      setErrors({ firstname: "You must be logged in to continue." });
-      return;
-    }
-
     const form = e.currentTarget;
-  
+
     const rawFirstname = form.firstname.value.trim();
     const rawLastname = form.lastname.value.trim();
-    const rawEmail = !userId ? form.email?.value.trim() : "";
+    // Only read email field if user is a guest
+    const rawEmail = !userId ? form.email?.value.trim() ?? "" : "";
     const rawCountry = form.country.value.trim();
     const rawCity = form.city.value.trim();
     const rawStreet = form.street.value.trim();
@@ -84,7 +80,6 @@ const Shipping = () => {
         return;
       }
     }
-
 
     if (!rawCountry) {
       setErrors(prev => ({ ...prev, country: "Please select a country" }));
@@ -125,7 +120,7 @@ const Shipping = () => {
       setErrors(prev => ({ ...prev, postalCode: "Please enter a valid postal code (3-10 characters)" }));
       return;
     }
-    
+
     if (!rawPhone) {
       setErrors(prev => ({ ...prev, phone: "Phone number is required" }));
       return;
@@ -138,22 +133,20 @@ const Shipping = () => {
 
     setIsPending(true);
 
-    const formData = {
-      userId,
+    const result = await submitShippingDetails({
+      ...(userId ? { userId } : {}),
       firstname,
       lastname,
-      ...(email && { email }),
+      ...(email ? { email } : {}),
       country,
       city,
       street,
       postalCode,
       phone,
-    };
-
-    const result = await submitShippingDetails(formData);
+    });
 
     if (result.success) {
-      router.push("/payment"); 
+      router.push("/payment");
     } else {
       const sanitizedError = sanitizeString(String(result.error));
       setErrors(prev => ({ ...prev, firstname: sanitizedError }));
@@ -172,7 +165,6 @@ const Shipping = () => {
     <form onSubmit={handleSubmit} className="space-y-6">
       <h1 className="text-heading-3">Shipping Address</h1>
       <div className="grid grid-cols-2 gap-4 bg-light-light rounded-lg shadow-shadow-s p-8">
-        <input type="hidden" name="userId" value={userId} />
 
         <div className="col-span-1">
           <input
@@ -202,6 +194,7 @@ const Shipping = () => {
           )}
         </div>
 
+        {/* Email only shown to guests */}
         {!userId && (
           <div className="col-span-2">
             <input
