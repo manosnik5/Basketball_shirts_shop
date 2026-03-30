@@ -102,10 +102,41 @@ export const validateLength = (
   return length >= min && length <= max;
 };
 
+const greekLatinRegex = /^[a-zA-Z\u0370-\u03FF\u1F00-\u1FFF\s\-']+$/;
+const alphanumericGreekRegex = /^[a-zA-Z0-9\u0370-\u03FF\u1F00-\u1FFF\s\-]+$/;
+
+export const validatePostalCode = (postalCode: string): boolean => {
+  const sanitized = sanitizeString(postalCode);
+  return (
+    sanitized.length >= 3 &&
+    sanitized.length <= 10 &&
+    alphanumericGreekRegex.test(sanitized)
+  );
+};
+
+export const validateStreet = (street: string): boolean => {
+  const sanitized = sanitizeString(street);
+  return (
+    sanitized.length >= 3 &&
+    sanitized.length <= 100 &&
+    alphanumericGreekRegex.test(sanitized)
+  );
+};
+
+export const validateCity = (city: string): boolean => {
+  const sanitized = sanitizeString(city);
+  return (
+    sanitized.length >= 2 &&
+    sanitized.length <= 50 &&
+    greekLatinRegex.test(sanitized)
+  );
+};
 
 export const validateName = (name: string): boolean => {
-  const nameRegex = /^[a-zA-Z\s\-']+$/;
-  return nameRegex.test(name) && name.trim().length > 0;
+  return (
+    greekLatinRegex.test(name) &&
+    name.trim().length > 0
+  );
 };
 
 
@@ -196,20 +227,6 @@ export const validateForm = (
   };
 };
 
-export const validatePostalCode = (postalCode: string): boolean => {
-  const sanitized = sanitizeString(postalCode);
-  return sanitized.length >= 3 && sanitized.length <= 10 && /^[a-zA-Z0-9\s\-]+$/.test(sanitized);
-};
-
-export const validateStreet = (street: string): boolean => {
-  const sanitized = sanitizeString(street);
-  return sanitized.length >= 3 && sanitized.length <= 100;
-};
-
-export const validateCity = (city: string): boolean => {
-  const sanitized = sanitizeString(city);
-  return sanitized.length >= 2 && sanitized.length <= 50 && /^[a-zA-Z\s\-']+$/.test(sanitized);
-};
 
 export const validateImageFile = (
   file: File, 
